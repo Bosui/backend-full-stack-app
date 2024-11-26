@@ -1,0 +1,6 @@
+{
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+    "typescript.tsserver.log": "verbose",
+    "typescript.tsserver.trace": "messages",
+    "typescript.tsserver.useSeparateSyntaxServer": true
+}

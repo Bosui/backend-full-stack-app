@@ -1,0 +1,29 @@
+{
+    // Konfigūracijų sąrašas
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node", // Naudoja Node.js kaip runtime
+            "request": "launch", // Paleidžia programą
+            "name": "Debug TypeScript", // Debug sesijos pavadinimas
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ], // Naudoja ts-node registravimą
+            "args": [
+                "${workspaceFolder}/src/index.ts"
+            ], // Paleidžia jūsų `index.ts`
+            "cwd": "${workspaceFolder}", // Dabartinis darbo katalogas
+            "sourceMaps": true, // Leidžia source map failus
+            "env": {
+                "NODE_ENV": "development" // Aplinka yra vystymo
+            },
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js"
+            ], // Kompiliuotų JS failų vieta
+            "skipFiles": [
+                "<node_internals>/**"
+            ] // Praleidžia Node.js vidinius failus
+        }
+    ]
+}
