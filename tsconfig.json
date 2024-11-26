@@ -1,21 +1,15 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "target": "esnext",
-    "module": "commonjs",
-    "outDir": "./src/dist",
+    "target": "ESNext",
+    "module": "CommonJS",
+    "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
-    "paths": {
-      "*": [
-        "node_modules/*"
-      ]
-    }
+    "resolveJsonModule": true
   },
   "include": [
     "src"
