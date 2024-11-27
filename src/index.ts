@@ -15,16 +15,21 @@ const PORT = process.env.PORT || 3000; // Numatytasis port'as, jei `PORT` nėra 
 
 // CORS konfigūracija
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "*", // Leiskite užklausas tik iš nurodyto domeno
+  origin: process.env.FRONTEND_URL || "*", // Nurodytas jūsų „frontend“ URL arba visi leidžiami šaltiniai
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Jei naudojate slapukus ar autentifikaciją
+  credentials: true, // Jei naudojate autentifikaciją per slapukus
 };
 
 app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
+
+// Sveikatos patikrinimo maršrutas (naudinga testavimui)
+app.get("/", (req, res) => {
+  res.send({ message: "Backend server is running" });
+});
 
 // Maršrutų nustatymai
 app.use("/auth", authRoutes);
@@ -36,9 +41,22 @@ app.use("/bookings", bookingRoutes);
 connectDB()
   .then(() => {
     app.listen(PORT, () =>
-      console.log(`Server running on http://localhost:${PORT}`)
+      console.log(
+        `Server running on ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`
+      )
     );
   })
   .catch((err) => {
-    console.error("Failed to connect to the database", err);
+    console.error("Failed to connect to the database:", err.message);
   });
+
+// 404 klaidos valdymas
+app.use((req, res, next) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
+// Klaidos valdymas
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal Server Error" });
+});
