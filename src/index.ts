@@ -14,8 +14,19 @@ const app = express();
 const PORT = process.env.PORT || 3000; // Numatytasis port'as, jei `PORT` nėra nurodytas
 
 // CORS konfigūracija
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || "*", // Nurodytas jūsų „frontend“ URL arba visi leidžiami šaltiniai
+const allowedOrigins = [
+  process.env.LOCAL_FRONTEND_URL, // Lokalus frontend kelias iš .env
+  process.env.PRODUCTION_FRONTEND_URL, // Produkcinis frontend kelias iš .env
+];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (origin && allowedOrigins.includes(origin)) {
+      callback(null, true); // Leidžiame užklausą
+    } else {
+      callback(new Error("Not allowed by CORS")); // Blokuojame užklausą
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true, // Jei naudojate autentifikaciją per slapukus
