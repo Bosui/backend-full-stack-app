@@ -11,25 +11,24 @@ import categoryRoutes from "./routes/categoryRoutes";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Numatytasis port'as, jei `PORT` nėra nurodytas
+const PORT = process.env.PORT || 3000;
 
-// CORS konfigūracija
 const allowedOrigins = [
-  process.env.LOCAL_FRONTEND_URL, // Lokalus frontend kelias iš .env
-  process.env.PRODUCTION_FRONTEND_URL, // Produkcinis frontend kelias iš .env
+  process.env.LOCAL_FRONTEND_URL || "http://localhost:5173",
+  process.env.PRODUCTION_FRONTEND_URL || "https://your-production-frontend.com",
 ];
 
+console.log("Allowed origins:", allowedOrigins);
+
 const corsOptions: cors.CorsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allowed?: boolean) => void) => {
-    console.log("CORS origin:", origin);
-    if (!origin) {
-  callback(null, true); // Leisti užklausą, jei origin nėra nurodytas
-} else if (allowedOrigins.includes(origin)) {
-  callback(null, true);
-} else {
-  console.log("Blocked by CORS:", origin);
-  callback(new Error("Not allowed by CORS"));
-}
+  origin: (origin, callback) => {
+    console.log(`Incoming request from origin: ${origin}`);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`Blocked by CORS. Origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    }
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -37,40 +36,32 @@ const corsOptions: cors.CorsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// Middleware
 app.use(express.json());
 
-// Sveikatos patikrinimo maršrutas (naudinga testavimui)
 app.get("/", (req, res) => {
   res.send({ message: "Backend server is running" });
 });
 
-// Maršrutų nustatymai
 app.use("/auth", authRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/businesses", businessRoutes);
 app.use("/bookings", bookingRoutes);
 
-// Prisijungimas prie duomenų bazės ir serverio paleidimas
 connectDB()
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(
-        `Server running on ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`
-      )
-    );
+    console.log("Connected to the database");
+    app.listen(PORT, () => {
+      console.log(`Server running on ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`);
+    });
   })
   .catch((err) => {
     console.error("Failed to connect to the database:", err.message);
   });
 
-// 404 klaidos valdymas
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-// Klaidos valdymas
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });
