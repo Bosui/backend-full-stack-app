@@ -20,16 +20,18 @@ const allowedOrigins = [
 ];
 
 const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    if (origin && allowedOrigins.includes(origin)) {
-      callback(null, true); // Leidžiame užklausą
+  origin: (origin: string | undefined, callback: (err: Error | null, allowed?: boolean) => void) => {
+    console.log("CORS origin:", origin);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS")); // Blokuojame užklausą
+      console.log("Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Jei naudojate autentifikaciją per slapukus
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -70,4 +72,8 @@ app.use((req, res, next) => {
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
