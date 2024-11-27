@@ -22,12 +22,14 @@ const allowedOrigins = [
 const corsOptions: cors.CorsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allowed?: boolean) => void) => {
     console.log("CORS origin:", origin);
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
+    if (!origin) {
+  callback(null, true); // Leisti užklausą, jei origin nėra nurodytas
+} else if (allowedOrigins.includes(origin)) {
+  callback(null, true);
+} else {
+  console.log("Blocked by CORS:", origin);
+  callback(new Error("Not allowed by CORS"));
+}
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
