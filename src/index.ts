@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 const allowedOrigins = [
   process.env.LOCAL_FRONTEND_URL || "http://localhost:5173",
   process.env.PRODUCTION_FRONTEND_URL || "https://your-production-frontend.com",
+  process.env.PRODUCTION_FRONTEND_URL1 || "https://10-full-stack-app-frontend.vercel.app",
 ];
 
 console.log("Allowed origins:", allowedOrigins);
@@ -66,3 +67,6 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   console.error(err.stack);
   res.status(500).json({ error: "Internal Server Error" });
 });
+
+
+

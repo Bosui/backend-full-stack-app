@@ -5,6 +5,7 @@ import { generateToken } from "../utils/password";
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
+  console.log("Gauta registracija:", req.body.user);
   try {
     const user = req.body;
     const existingUser = await User.findOne({ email: user.email });
